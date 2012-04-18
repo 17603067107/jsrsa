@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script type="text/javascript" src="hex.js"></script>
+  <script type="text/javascript" src="base64.js"></script>
+  <script type="text/javascript" src="oids.js"></script>
+  <script type="text/javascript" src="asn1.js"></script>
+  <script type="text/javascript" src="jsbn.js"></script>
+  <script type="text/javascript" src="jsbn2.js"></script>
+  <script type="text/javascript" src="prng4.js"></script>
+  <script type="text/javascript" src="rng.js"></script>
+  <script type="text/javascript" src="rsa.js"></script>
+  <script type="text/javascript" src="rsa2.js"></script>
+  <script type="text/javascript" src="pemconvert.js"></script>
+  <script type="text/javascript">
+
+    var privatekey = pem_import ("-----BEGIN RSA PRIVATE KEY-----\nMIIBOwIBAAJBAPBYvSszUjI5psKM958bHTDb+9NONv3XWVIGLR9/Al4j8/mqSDMh\nwFuu9oEyXl80+Ga2cohEQPpWyxzg3/tfGDUCAwEAAQJALbajHEFho93lQuGvA1sT\n3UQqDJG20ecQvRIhqPjuSVss4w63u4XA3k3//gObmKU/YxkvR5JEWJwcDFhCEJWL\nDQIhAPmap6TzAzpnwIvsSKvmh8X6lFhZ57oRNzXlBe/WLvZnAiEA9oFbbPcEKmU9\nS3eSsBA0mZ3Ct+TDqwSiX2vPDxk5AwMCIQDFIBzyKnIMOFBasTsbd68W7jUmKarW\nyi3eRIeRyIfCVQIhAKt6dTUp6PXtE2SqO5rKyyyJuGjgdNVFFgc3IgUo0KYtAiAr\nw2sgOSU1WdjwLkBPunOCVlp5II/WWpSvRgo9MjcU3w==\n-----END RSA PRIVATE KEY-----\n");
+    var pubkey = pem_import ("-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAPBYvSszUjI5psKM958bHTDb+9NONv3X\nWVIGLR9/Al4j8/mqSDMhwFuu9oEyXl80+Ga2cohEQPpWyxzg3/tfGDUCAwEAAQ==\n-----END PUBLIC KEY-----");
+
+    function example_enc () {
+      var data = document.getElementById ("data").value;
+      document.getElementById ("data").value = pubkey.encrypt (data);
+    }
+
+    function example_dec () {
+      var data = document.getElementById ("data").value;
+      document.getElementById ("data").value = privatekey.decrypt (data);
+    }
+  </script>
+</head>
+<body onClick='rng_seed_time();' onKeyPress='rng_seed_time();'>
+  <textarea id="data" cols="64" rows="16"></textarea>
+  <button onclick="example_enc()">Encrypt</button>
+  <button onclick="example_dec()">Decrypt</button>
+</body>
+</html>

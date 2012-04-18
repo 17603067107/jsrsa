@@ -1,0 +1,14 @@
+This is a full JS RSA library, designed to work with phpseclib (but mostly¹ compatible with OpenSSL's implementation and in theory all that support PKCS 1.5 padded messages). It's largely compromised of the following libs, bugfixed, extended and made crosscompatible:
+
+ • http://www-cs-students.stanford.edu/~tjw/jsbn/ (bugfixed, extended for verify/sign¹ + support for longer messages inspired by http://bestmike007.com/2011/08/secure-data-transmission-between-pure-php-and-javascript-using-rsa/ )
+ • http://lapo.it/asn1js/ (modified to work with jsbn to actually export the data
+ • Plus some glue code and helper functions
+
+See example.html for how to use it.
+
+License:
+
+All parts are licensed under one of the MIT licenses, copyrights according to each source file
+
+___________
+¹ "mostly" compatible means encryption and decryption will work. The verify/sign methods are not using the correct padding methods as per RFC, but are just "swapped" encrypt/decrypt functions. This works fine with phpseclib, but not with openssl. Dunno about other libs.
