@@ -98,3 +98,4 @@ function rng_get_bytes(ba) {
 function SecureRandom() {}
 
 SecureRandom.prototype.nextBytes = rng_get_bytes;
+SecureRandom.prototype.nextByte = rng_get_byte;
