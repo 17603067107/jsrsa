@@ -96,9 +96,9 @@ function am3(i,x,w,j,c,n) {
   }
   return c;
 }
-if(j_lm && (navigator.appName == "Microsoft Internet Explorer")) {
-  BigInteger.prototype.am = am2;
-  dbits = 30;
+if( (j_lm && (navigator.appName == "Microsoft Internet Explorer")) || navigator.userAgent.indexOf("Safari")) {
+BigInteger.prototype.am = am2; // most performant with JSCore
+dbits = 30;
 }
 else if(j_lm && (navigator.appName != "Netscape")) {
   BigInteger.prototype.am = am1;
