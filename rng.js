@@ -42,6 +42,9 @@ var rng_pptr;
 
 // Mix in a 32-bit integer into the pool
 function rng_seed_int(x) {
+  //if (typeof pavehelper != "undefined")
+//	return;
+
   rng_pool[rng_pptr++] ^= x & 255;
   rng_pool[rng_pptr++] ^= (x >> 8) & 255;
   rng_pool[rng_pptr++] ^= (x >> 16) & 255;
@@ -51,11 +54,14 @@ function rng_seed_int(x) {
 
 // Mix in the current time (w/milliseconds) into the pool
 function rng_seed_time() {
+//  if (typeof pavehelper != "undefined")
+//	return;
+
   rng_seed_int(new Date().getTime());
 }
 
 // Initialize the pool with junk if needed.
-if(rng_pool == null) {
+if(rng_pool == null /*&& typeof pavehelper === "undefined"*/) {
   rng_pool = new Array();
   rng_pptr = 0;
   var t;
@@ -92,10 +98,18 @@ function rng_get_byte() {
 
 function rng_get_bytes(ba) {
   var i;
-  for(i = 0; i < ba.length; ++i) ba[i] = rng_get_byte();
+  if (typeof pavehelper === "undefined")
+    for(i = 0; i < ba.length; ++i) ba[i] = rng_get_byte();
+  else
+    for(i = 0; i < ba.length; ++i) ba[i] = pavehelper.getRandomByte();
 }
 
 function SecureRandom() {}
-
 SecureRandom.prototype.nextBytes = rng_get_bytes;
-SecureRandom.prototype.nextByte = rng_get_byte;
+
+if (typeof pavehelper != "undefined") {
+	console.log ("Detected pavehelper native API, using it.");
+	SecureRandom.prototype.nextByte = pavehelper.getRandomByte;
+} else
+	SecureRandom.prototype.nextByte = rng_get_byte;
+

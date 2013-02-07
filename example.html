@@ -6,31 +6,68 @@
   <script type="text/javascript" src="oids.js"></script>
   <script type="text/javascript" src="asn1.js"></script>
   <script type="text/javascript" src="jsbn.js"></script>
-  <script type="text/javascript" src="jsbn2.js"></script>
   <script type="text/javascript" src="prng4.js"></script>
   <script type="text/javascript" src="rng.js"></script>
   <script type="text/javascript" src="rsa.js"></script>
-  <script type="text/javascript" src="rsa2.js"></script>
   <script type="text/javascript" src="pemconvert.js"></script>
   <script type="text/javascript">
 
     var privatekey = pem_import ("-----BEGIN RSA PRIVATE KEY-----\nMIIBOwIBAAJBAPBYvSszUjI5psKM958bHTDb+9NONv3XWVIGLR9/Al4j8/mqSDMh\nwFuu9oEyXl80+Ga2cohEQPpWyxzg3/tfGDUCAwEAAQJALbajHEFho93lQuGvA1sT\n3UQqDJG20ecQvRIhqPjuSVss4w63u4XA3k3//gObmKU/YxkvR5JEWJwcDFhCEJWL\nDQIhAPmap6TzAzpnwIvsSKvmh8X6lFhZ57oRNzXlBe/WLvZnAiEA9oFbbPcEKmU9\nS3eSsBA0mZ3Ct+TDqwSiX2vPDxk5AwMCIQDFIBzyKnIMOFBasTsbd68W7jUmKarW\nyi3eRIeRyIfCVQIhAKt6dTUp6PXtE2SqO5rKyyyJuGjgdNVFFgc3IgUo0KYtAiAr\nw2sgOSU1WdjwLkBPunOCVlp5II/WWpSvRgo9MjcU3w==\n-----END RSA PRIVATE KEY-----\n");
     var pubkey = pem_import ("-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAPBYvSszUjI5psKM958bHTDb+9NONv3X\nWVIGLR9/Al4j8/mqSDMhwFuu9oEyXl80+Ga2cohEQPpWyxzg3/tfGDUCAwEAAQ==\n-----END PUBLIC KEY-----");
 
+    function keyimport () {
+      privatekey = pem_import (document.getElementById ("priv").value);
+      pubkey = pem_import (document.getElementById ("publ").value);
+    }
+
     function example_enc () {
+      var start = Date.now();
       var data = document.getElementById ("data").value;
       document.getElementById ("data").value = pubkey.encrypt (data);
+      var stop = Date.now();
+      document.getElementById ("debug1").value = stop - start;
     }
 
     function example_dec () {
+      var start = Date.now();
       var data = document.getElementById ("data").value;
       document.getElementById ("data").value = privatekey.decrypt (data);
+      var stop = Date.now();
+      document.getElementById ("debug2").value = stop - start;
+    }
+
+    function example_sig () {
+      var start = Date.now();
+      var data = document.getElementById ("data").value;
+      document.getElementById ("sig").value = privatekey.sign (data);
+      var stop = Date.now();
+      document.getElementById ("debug3").value = stop - start;
+    }
+
+    function example_vfy () {
+      var start = Date.now();
+      var data = document.getElementById ("data").value;
+      var sig = document.getElementById ("sig").value;
+      document.getElementById ("sig").value = pubkey.verify (data,sig);
+      var stop = Date.now();
+      document.getElementById ("debug4").value = stop - start;
     }
   </script>
 </head>
 <body onClick='rng_seed_time();' onKeyPress='rng_seed_time();'>
-  <textarea id="data" cols="64" rows="16"></textarea>
-  <button onclick="example_enc()">Encrypt</button>
-  <button onclick="example_dec()">Decrypt</button>
+  Text: <br>
+  <textarea id="data" cols="64" rows="16"></textarea> Signature: <input id="sig"/>
+  <br>
+  <button onclick="example_enc()">Encrypt</button><button onclick="example_dec()">Decrypt</button><br>
+  <button onclick="example_sig()">Sign</button><button onclick="example_vfy()">Verify</button><br>
+  Encryption time: <input id="debug1"/> Signing time: <input id="debug3"/><br>
+  Decryption time: <input id="debug2"/> Verification time: <input id="debug4"/>
+  <hr>
+  Import key:<br>
+  Private:
+  <textarea id="priv" cols="64" rows="16"></textarea>
+  <br>Public:
+  <textarea id="publ" cols="64" rows="16"></textarea><button onclick="keyimport()">Import keys (else use default)</button>
+  <br><br>
 </body>
 </html>

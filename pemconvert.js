@@ -37,9 +37,23 @@ function pem_import (pem) {
 	var reHex = /^\s*(?:[0-9A-Fa-f][0-9A-Fa-f]\s*)+$/;
 	var der = reHex.test(pem) ? Hex.decode(pem) : Base64.unarmor(pem);
 	var asn1 = ASN1.decode (der);
-	var key = new RSAKey();
+	var imported_key = undefined;
+
+	if (typeof pavehelper != "undefined") {
+		console.log ("Native bridge detected, using accelerated native RSA.")
+		//Qt uses static names to import keys into the namespace. Avoid overwriting keys by using random names.
+		var keyname = "key" + Date.now().toString()+Math.random().toString();
+		pavehelper.key_new(keyname);
+
+		imported_key = this[keyname];
+		console.log (imported_key.N)
+	} else {
+		console.log ("Could not find native bridge, using slower pure JS implementation.");
+		imported_key = new RSAKey();
+	}
+
 	if (pem_is_private (pem)) {
-		key.setPrivateEx (asn1.sub[1].content().toString(16),
+		imported_key.setPrivateEx (asn1.sub[1].content().toString(16),
 			asn1.sub[2].content().toString(16),
 			asn1.sub[3].content().toString(16),
 			asn1.sub[4].content().toString(16),
@@ -49,9 +63,17 @@ function pem_import (pem) {
 			asn1.sub[8].content().toString(16));
 	} else {
 		asn1 = asn1.sub[1].sub[0];
-		key.setPublic (asn1.sub[0].content().toString(16),asn1.sub[1].content().toString(16));
+		imported_key.setPublic (asn1.sub[0].content().toString(16),asn1.sub[1].content().toString(16));
 	}
-	return key;
+
+	return imported_key;
+}
+
+function key_compare (key1, key2) {
+	if (typeof(key1) === "RSAKey")
+		return key1.equals (key2);
+	//Native bridge has issues with passing C++ objects over JS back to C++
+	return (key1.N == key2.N && key1.E == key2.E);
 }
 
 function pem_is_private (pem) {
